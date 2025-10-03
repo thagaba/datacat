@@ -11,10 +11,11 @@ __pycache__/
 #*.sqlite3
 *.log
 
-# venv
+# env and venv
 env
 env_linux
 venv
+.env
 
 # other
 .DS_Store
@@ -37,3 +38,6 @@ apps/static/assets/.temp
 
 node_modules/
 yarn.lock
+
+#backup files
+*~
