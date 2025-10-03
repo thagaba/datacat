@@ -4,9 +4,16 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 import os
+import sys
 from   flask_migrate import Migrate
 from   flask_minify  import Minify
 from   sys import exit
+
+# Get the directory of the current file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Add the directory to sys.path
+sys.path.insert(0, current_dir)
 
 from apps.config import config_dict
 from apps import create_app, db
