@@ -20,23 +20,22 @@ from flask_wtf import FlaskForm
 @blueprint.route('/')
 @blueprint.route('/index')
 def index():
-    return render_template('pages/index.html', segment='index')
+    context = {
+        'site_name': config.Config.SITE_NAME,
+        'routes': config.Config.DYNAMIC_DATATB.keys(),
+        }
 
-@blueprint.route('/icon_feather')
-def icon_feather():
-    return render_template('pages/icon-feather.html', segment='icon_feather')
-
-@blueprint.route('/color')
-def color():
-    return render_template('pages/color.html', segment='color')
+    return render_template('pages/index.html', segment='index', **context)
 
 @blueprint.route('/sample_page')
 def sample_page():
-    return render_template('pages/sample-page.html', segment='sample_page')
+    context = {
+        'site_name': config.Config.SITE_NAME,
+        'routes': config.Config.DYNAMIC_DATATB.keys(),
+        'page_title': 'Page',
+        }
 
-@blueprint.route('/typography')
-def typography():
-    return render_template('pages/typography.html', segment='typography')
+    return render_template('pages/sample-page.html', segment='sample_page', **context)
 
 def getField(column): 
     if isinstance(column.type, db.Text):
@@ -52,54 +51,6 @@ def getField(column):
     if isinstance(column.type, db.LargeBinary):
         return wtforms.HiddenField(column.name.title())
     return wtforms.StringField(column.name.title()) 
-
-
-@blueprint.route('/profile', methods=['GET', 'POST'])
-@login_required
-def profile():
-
-    class ProfileForm(FlaskForm):
-        pass
-
-    readonly_fields = Users.readonly_fields
-    full_width_fields = {"bio"}
-
-    for column in Users.__table__.columns:
-        if column.name == "id":
-            continue
-
-        field_name = column.name
-        if field_name in full_width_fields:
-            continue
-
-        field = getField(column)
-        setattr(ProfileForm, field_name, field)
-
-    for field_name in full_width_fields:
-        if field_name in Users.__table__.columns:
-            column = Users.__table__.columns[field_name]
-            field = getField(column)
-            setattr(ProfileForm, field_name, field)
-
-    form = ProfileForm(obj=current_user)
-
-    if form.validate_on_submit():
-        readonly_fields.append("password")
-        excluded_fields = readonly_fields
-        for field_name, field_value in form.data.items():
-            if field_name not in excluded_fields:
-                setattr(current_user, field_name, field_value)
-
-        db.session.commit()
-        return redirect(url_for('home_blueprint.profile'))
-    
-    context = {
-        'segment': 'profile',
-        'form': form,
-        'readonly_fields': readonly_fields,
-        'full_width_fields': full_width_fields,
-    }
-    return render_template('pages/profile.html', **context)
 
 
 # Helper - Extract current page name from request
@@ -141,16 +92,6 @@ def error_500():
 def not_found_error(error):
     return redirect(url_for('error-500'))
 
-# Celery (to be refactored)
-@blueprint.route('/tasks-test')
-def tasks_test():
-    
-    input_dict = { "data1": "04", "data2": "99" }
-    input_json = json.dumps(input_dict)
-
-    task = celery_test.delay( input_json )
-
-    return f"TASK_ID: {task.id}, output: { task.get() }"
 
 
 # Custom template filter

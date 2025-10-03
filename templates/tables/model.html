@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} {% if page_title %} {{page_title}} {% else %} Dynamic DataTables {% endif %} {% endblock title %} 
+{% block title %} {% if page_title %} {{page_title}} {% else %} Dynamic DataTables {% endif %} {% endblock title %}
 
 {% block extrastyle %}
 
@@ -47,29 +47,6 @@
 <!-- [ Main Content ] start -->
 <div class="pc-container">
     <div class="pc-content">
-        <!-- [ breadcrumb ] start -->
-        <div class="page-header">
-            <div class="page-block">
-                <div class="row align-items-center">
-                    <div class="col-md-12">
-                        <div class="page-header-title">
-                            <h5 class="m-b-10">
-                                <a href="/">Home</a>
-                            </h5>
-                        </div>
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="{{ url_for('table_blueprint.dynamic_dt') }}">Dynamic DT</a>
-                            </li>
-                            <li class="breadcrumb-item"></li>
-                                <a href="{{ url_for('table_blueprint.model_dt', aPath=link) }}">{{ link|upper }}</a>
-                            </li>                            
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- [ breadcrumb ] end -->
 
         <div class="row">
             <!-- [ Typography ] start -->
@@ -139,7 +116,7 @@
                         </div>
 
                         <div>
-                            <form action="{{ url_for('table_blueprint.create_filter', model_name=link) }}" method="post">
+                            <form action="{{ url_for('tables_blueprint.create_filter', model_name=link) }}" method="post">
                     
                                 <div class="d-flex align-items-center gap-3 mb-3">
                                     <h3 class="">Filters</h3>
@@ -159,7 +136,7 @@
                                                 </select>
                                                 <input type="text" value="{{ filter_data.value }}" placeholder="Enter value" name="value" id="" class="form-control">
                                             </div>
-                                            <a href="{{ url_for('table_blueprint.delete_filter', model_name=link, id=filter_data.id) }}" class="remove-button btn btn-danger">X</a>
+                                            <a href="{{ url_for('tables_blueprint.delete_filter', model_name=link, id=filter_data.id) }}" class="remove-button btn btn-danger">X</a>
                                         </div>
                                         {% endfor %}
                                     {% endif %}
@@ -219,7 +196,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <form action="{{ url_for('table_blueprint.update', aPath=link, id=item.id ) }}" method="post" class="">
+                                                            <form action="{{ url_for('tables_blueprint.update', aPath=link, id=item.id ) }}" method="post" class="">
                                                                 
                                                                 <div class="row">
                                                                     <!-- FKs -->
@@ -297,7 +274,7 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <a href="{{ url_for('table_blueprint.delete', aPath=link, id=item.id ) }}" class="btn btn-danger">Delete</a>
+                                                        <a href="{{ url_for('tables_blueprint.delete', aPath=link, id=item.id ) }}" class="btn btn-danger">Delete</a>
                                                     </div>
                                                 </div>
                                                 </div>
@@ -392,7 +369,7 @@
                                         </div>
                                         <div>
 
-                                            <a href="{{ url_for('table_blueprint.export_csv', aPath=link) }}">
+                                            <a href="{{ url_for('tables_blueprint.export_csv', aPath=link) }}">
                                                 <img style="width: 30px" class="export-img" src="{{ url_for('static', filename='assets/img/export.png') }}" alt="">
                                             </a>
 
@@ -428,7 +405,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-body">
-                                    <form method="post" action="{{ url_for('table_blueprint.create', aPath=link) }}" class="row">
+                                    <form method="post" action="{{ url_for('tables_blueprint.create', aPath=link) }}" class="row">
 
                                         <!-- FKs -->
                                         {% for field, values in fk_fields.items() %}
@@ -495,8 +472,8 @@
 
 <script>
     const link = '{{ link }}';
-    const hideShowLink = "{{ url_for('table_blueprint.create_hide_show_filter', model_name=link) }}"
-    const pageItemsLink = "{{ url_for('table_blueprint.create_page_items', model_name=link) }}"
+    const hideShowLink = "{{ url_for('tables_blueprint.create_hide_show_filter', model_name=link) }}"
+    const pageItemsLink = "{{ url_for('tables_blueprint.create_page_items', model_name=link) }}"
 
     document.addEventListener('DOMContentLoaded', function () {
       var checkboxes = document.querySelectorAll('#dropdownDefaultCheckbox input[type="checkbox"]');

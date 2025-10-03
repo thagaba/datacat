@@ -5,22 +5,14 @@ Copyright (c) 2019 - present AppSeed.us
 
 import json, csv, io
 from flask_login import login_required
-from apps.dyn_dt import blueprint
+from apps.tables import blueprint
 from flask import render_template, request, redirect, url_for, jsonify, make_response
-from apps.dyn_dt.utils import get_model_field_names, get_model_fk_values, name_to_class, user_filter, exclude_auto_gen_fields
+from apps.tables.utils import get_model_field_names, get_model_fk_values, name_to_class, user_filter, exclude_auto_gen_fields
 from apps import db, config
-from apps.dyn_dt.utils import *
+from apps.tables.utils import *
 from sqlalchemy import and_
 from sqlalchemy import Integer, DateTime, String, Text
 from datetime import datetime
-
-@blueprint.route('/dynamic-dt')
-def dynamic_dt():
-    context = {
-        'routes': config.Config.DYNAMIC_DATATB.keys(),
-        'segment': 'dynamic_dt'
-    }
-    return render_template('dyn_dt/index.html', **context)
 
 @blueprint.route('/create_filter/<model_name>', methods=["POST"])
 def create_filter(model_name):
@@ -38,7 +30,7 @@ def create_filter(model_name):
             db.session.add(filter_instance)
         
         db.session.commit()
-        return redirect(url_for('table_blueprint.model_dt', aPath=model_name))
+        return redirect(url_for('tables_blueprint.model_dt', aPath=model_name))
 
 
 @blueprint.route('/create_page_items/<model_name>', methods=["POST"])
@@ -53,7 +45,7 @@ def create_page_items(model_name):
             page_items = PageItems(parent=model_name, items_per_page=items)
         db.session.add(page_items)
         db.session.commit()
-        return redirect(url_for('table_blueprint.model_dt', aPath=model_name))
+        return redirect(url_for('tables_blueprint.model_dt', aPath=model_name))
 
 
 @blueprint.route('/create_hide_show_filter/<model_name>', methods=["POST"])
@@ -82,11 +74,11 @@ def delete_filter(model_name, id):
     if filter_instance:
         db.session.delete(filter_instance)
         db.session.commit()
-        return redirect(url_for('table_blueprint.model_dt', aPath=model_name))
+        return redirect(url_for('tables_blueprint.model_dt', aPath=model_name))
     return jsonify({'error': 'Filter not found'}), 404
 
 
-@blueprint.route('/dynamic-dt/<aPath>', methods=['GET', 'POST'])
+@blueprint.route('/<aPath>', methods=['GET', 'POST'])
 def model_dt(aPath):
     aModelName = None
     aModelClass = None
@@ -155,7 +147,9 @@ def model_dt(aPath):
 
     # Context
     context = {
-        'page_title': f'Dynamic DataTable - {aPath.lower().title()}',
+        'site_name': config.Config.SITE_NAME,
+        'routes': config.Config.DYNAMIC_DATATB.keys(),
+        'page_title': f'{aPath.lower().title()}',
         'link': aPath,
         'field_names': field_names,
         'db_field_names': db_fields,
@@ -175,7 +169,7 @@ def model_dt(aPath):
         'choices_dict': choices_dict,
         'exclude_auto_gen_fields': exclude_auto_gen_fields(aModelClass)
     }
-    return render_template('dyn_dt/model.html', **context)
+    return render_template('tables/model.html', **context)
 
 
 @blueprint.route('/create/<aPath>', methods=["POST"])
